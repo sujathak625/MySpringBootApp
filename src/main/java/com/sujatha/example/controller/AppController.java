@@ -1,5 +1,7 @@
 package com.sujatha.example.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,9 +25,12 @@ public class AppController {
 	@RequestMapping("/")
 	public ModelAndView getHomePage() {
 		ModelAndView mv = new ModelAndView();
-	    mv.setViewName("home");
-		mv.addObject("hello", "Hi. I am a rest microservice");
-		return mv;
+		List<String> countriesList = myService.getCountries();
+		if(countriesList!=null) {
+			mv.addObject("countries",countriesList);
+		}	
+	    mv.setViewName("header");		
+		return mv;	
 	}
 	
 	@RequestMapping("/home")
@@ -47,6 +53,17 @@ public class AppController {
 	    mv.setViewName("contact");		
 		return mv;
 	}
+	
+	@RequestMapping(value="/preLoad")
+	public ModelAndView getPreloadedData() {
+		ModelAndView mv = new ModelAndView();
+		List<String> countriesList = myService.getCountries();
+		if(countriesList!=null) {
+			mv.addObject("countries",countriesList);
+		}	
+	    mv.setViewName("header");		
+		return mv;
+	}
 
 	@RequestMapping(value="/userRegister", method = RequestMethod.POST)
 	public ModelAndView registerNewUser(@Valid @ModelAttribute("userRegister") UserRegister userRegister,BindingResult result) {
@@ -57,12 +74,13 @@ public class AppController {
 	    }	
 		boolean updateStatus = false;
 		updateStatus = myService.registerUser(userRegister);
-		if(updateStatus) {
+		mv.addObject("updateStatus",updateStatus);
+		if(updateStatus) {			
 			mv.addObject("status","User added successfully");
 		} else {
 			mv.addObject("status","User not added successfully");
 		}
-	    mv.setViewName("UserRegister");		
+	    mv.setViewName("header");		
 		return mv;
 	}
 
