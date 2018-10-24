@@ -2,11 +2,11 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <title>Home</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 <script
@@ -36,8 +36,22 @@
 	})();
 </script>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#password').keyup(function(e) {
+        var txtVal = $(this).val();
+        $('#passwordHidden').val(txtVal);
+    }); 
+   
+});
+</script>
+
 </head>
 <body>
+
+
 
 	<nav class="navbar navbar-expand-sm white navbar-lightk"> <!-- Brand -->
 	<a class="navbar-brand" href="#"><img width="60px" height="50px"
@@ -45,10 +59,11 @@
 
 	<!-- Links -->
 	<ul class="navbar-nav">
-		<li class="nav-item"><a class="nav-link" href="home.jsp"><span
+		<li class="nav-item"><a class="nav-link" href="/home"><span
 				color="#000000">Home</span></a></li>
 		<li class="nav-item"><a class="nav-link" href="/about">About</a></li>
 		<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+		<li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
 
 		<!-- Dropdown -->
 		<li class="nav-item dropdown"><a class="nav-link dropdown-toggle"
@@ -62,8 +77,24 @@
 	</ul>
 
 	<div class="d-flex justify-content-end flex-grow-1 ">
+
+		<%
+			boolean isUserLoggedIn = false;
+			String loggedInStatus = (String) request.getAttribute("loggedInStatus");
+			if (loggedInStatus==null || "".equals(loggedInStatus) || "false".equals(loggedInStatus)) {
+		%>
+
 		<a class="nav-link" data-toggle="modal" data-target="#loginModal">Sign
-			In</a> <a class="nav-link" data-toggle="modal"
+			In</a>
+
+		<%
+			} else if ("true".equals(loggedInStatus)){
+		%>
+			<a class="nav-link" href="/logout">Sign Out</a>
+		<%
+			}
+		%>
+		 <a class="nav-link" data-toggle="modal"
 			data-target="#registerModal">Register</a>
 
 		<form class="form-inline" action="/action_page.php">
@@ -87,16 +118,20 @@
 
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form>
+					<form action="/logIn" modelAttribute="logIn" method=POST>
 						<div class="form-group">
 							<label class="sr-only" for="userName">User Name</label> <input
-								type="email" class="form-control" id="userName"
-								placeholder="User Name">
+								type="text" class="form-control" id="userName"
+								name="userName" placeholder="User Name">
+								
 						</div>
 						<div class="form-group">
 							<label class="sr-only" for="password">Password</label> <input
 								type="password" class="form-control" id="password"
 								placeholder="Password">
+								<input
+								type="hidden" class="form-control" id="passwordHidden" name="password"
+								>
 						</div>
 						<div class="checkbox">
 							<label> <input type="checkbox"> Remember me
@@ -291,6 +326,7 @@
 
 	<%
 		String status = "";
+
 		status = (String) request.getAttribute("status");
 		if (status != null || !"".equals(status)) {
 	%>
